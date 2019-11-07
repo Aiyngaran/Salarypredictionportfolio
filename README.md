@@ -55,3 +55,17 @@ train_features_df = load_df('train_features.csv')
 train_salaries_df = load_df('train_salaries.csv')
 test_features_df = load_df('test_features.csv')
 ```
+
+### ---- 3 Explore the data (EDA) ----
+
+We initially examine how the data set looks like by looking at the first 10 rows and its dimensions
+```
+train_features_df.head(10)
+```
+```
+train_salaries_df.head(10)
+test_features_df.head(10)
+train_features_df.shape
+train_salaries_df.shape
+test_features_df.shape
+```
