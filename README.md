@@ -5,7 +5,6 @@ Author:  **Aiyngaran Chokalingam**
 ---
 
 ## PART 1 DEFINE
----
 
 ### ---- 1 Define the problem ----
 
