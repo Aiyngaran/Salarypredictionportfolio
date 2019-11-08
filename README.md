@@ -124,6 +124,7 @@ Checking the distribution of the response variable
 sns.set_style('darkgrid')
 sns.distplot(train_df_eda.salary)
 ```
+Salary prediction/response.JPG
 
 The Distribution seems to be slightly right skewed, might have some possible outliers. There are also some values around 0 salary.
 
