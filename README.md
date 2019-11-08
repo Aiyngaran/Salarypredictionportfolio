@@ -5,10 +5,9 @@ Author:  **Aiyngaran Chokalingam**
 ---
 
 ## PART 1 DEFINE
-
+---
 
 ### ---- 1 Define the problem ----
----
 
 ##### From an employer's perspective, if the firm employes a person for a particular position it has to offer a package whcih best suits the position in that location. It is most of the times extremely higher or lower than what is actual. So, this project intends to provie a model which can predict the salary provided the company, location, position and a few other inforamtion using which the company will be able to offer a salary with a known variablity. From an employee's perspective, he/she can choose a company based on their qualification and salary expectations or decide their career based on the it.
 
