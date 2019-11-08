@@ -507,5 +507,3 @@ Saving the model, predictions and feature importances
 ```
 save_model(best_model, feature_importance, predictions)
 ```
-
-## Future scope:
