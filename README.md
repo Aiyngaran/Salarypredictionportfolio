@@ -132,6 +132,8 @@ The Distribution seems to be slightly right skewed, might have some possible out
 ```
 train_df_eda.boxplot(column = 'salary')
 ```
+![Response box plot](https://github.com/Aiyngaran/Salarypredictionportfolio/blob/master/Salary%20prediction/Box%20plot.JPG)
+
 There seems to be outliers on bot the sides of the plot and there are more outliers above the upper limit of the whiskers plot than below the lower limit of the whiskers plot
 
 ```
@@ -172,6 +174,8 @@ def plot_numeric(df, col):
 for column in ['yearsExperience', 'milesFromMetropolis']:
     plot_numeric(train_df_eda, column)
 ```
+![Numerical variables](https://github.com/Aiyngaran/Salarypredictionportfolio/blob/master/Salary%20prediction/Numerical.JPG)
+
 As years of experience increases, the salary tends to increase and the as the mile from metropolis increases, the salary tends to decrease.
 
 ```
@@ -204,6 +208,14 @@ def plot_features(df, col):
 for col in ['companyId', 'jobType', 'degree', 'major', 'industry', 'yearsExperience', 'milesFromMetropolis']:
     plot_features(train_df_eda, col)
 ```
+![CompanyID vs Salary](https://github.com/Aiyngaran/Salarypredictionportfolio/blob/master/Salary%20prediction/CompanyID.JPG)
+![Job type vs Salary](https://github.com/Aiyngaran/Salarypredictionportfolio/blob/master/Salary%20prediction/Job%20type.JPG)
+![Degree vs Salary](https://github.com/Aiyngaran/Salarypredictionportfolio/blob/master/Salary%20prediction/Degree.JPG)
+![Major vs Salary](https://github.com/Aiyngaran/Salarypredictionportfolio/blob/master/Salary%20prediction/Major.JPG)
+![Industry vs Salary](https://github.com/Aiyngaran/Salarypredictionportfolio/blob/master/Salary%20prediction/Industry.JPG)
+![Years experience vs Salary](https://github.com/Aiyngaran/Salarypredictionportfolio/blob/master/Salary%20prediction/Years%20experience.JPG)
+![Miles from metropolis vs Salary](https://github.com/Aiyngaran/Salarypredictionportfolio/blob/master/Salary%20prediction/Miles%20from%20metropolis.JPG)
+
 From the plot for company ID and Salary it is clear that companyID doesnt have any particular linear relationship with the salary on itself. The job type, degree, industry and years experience has a significant positive linear relationship with salary and miles from metropolis has a clear negative linear relationship with salary. The major seems to have some kind of relationship with salary but not very significant.
 
 ### Converting categorical variables to numerical to check correlation
@@ -232,6 +244,8 @@ sns.heatmap(correlation, cmap = 'Blues', annot = True)
 plt.xticks(rotation = 90)
 plt.show()
 ```
+![Correlation plot](https://github.com/Aiyngaran/Salarypredictionportfolio/blob/master/Salary%20prediction/Correlation.JPG)
+
 From the correlation plot it can be seen that there are correlations between the target variable (salary) and every other except for the companyID. There are also some inter relations between the features like major, degree, and job type.
 
 ### Defining the required functin to reuse
@@ -369,6 +383,8 @@ model_summary = pd.DataFrame(list(model_dict.items()), columns=['Model', 'Mean s
 model_summary = model_summary.sort_values(by ='Mean squared error' )
 print(model_summary)
 ```
+![Model summary](https://github.com/Aiyngaran/Salarypredictionportfolio/blob/master/Salary%20prediction/Model%20summary.JPG)
+
 ### ---- 9 Select best model  ----
 ```
 test_df = clean_df(test_features_df)
@@ -397,6 +413,8 @@ if hasattr(best_model, 'feature_importances_'):
 
 feature_importance = feature_imp[0]
 ```
+![Feature importances](https://github.com/Aiyngaran/Salarypredictionportfolio/blob/master/Salary%20prediction/Feature%20importances.JPG)
+
 ## Part 4 - DEPLOY
 
 ### ---- 11 Automate pipeline ----
