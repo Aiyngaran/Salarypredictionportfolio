@@ -5,11 +5,12 @@ Author:  **Aiyngaran Chokalingam**
 ---
 
 ## PART 1 DEFINE
+
+
 ### ---- 1 Define the problem ----
+---
 
 ##### From an employer's perspective, if the firm employes a person for a particular position it has to offer a package whcih best suits the position in that location. It is most of the times extremely higher or lower than what is actual. So, this project intends to provie a model which can predict the salary provided the company, location, position and a few other inforamtion using which the company will be able to offer a salary with a known variablity. From an employee's perspective, he/she can choose a company based on their qualification and salary expectations or decide their career based on the it.
-
----
 
 ## Requirements
 There are some general library requirements for the project and some of which are specific to individual methods. The general requirements are as follows.
@@ -45,6 +46,8 @@ import pickle
 - *NOTE:  use pip install "name of the library" in anaconda prompt to install the library files which are not predefined in python. Example pip install nltk*
 
 ## PART 2 DISCOVER
+
+
 ### ---- 2 Load the data ----
 
 Loading all the necessary datasets
@@ -77,8 +80,7 @@ train_salaries_df.shape
 ```
 test_features_df.shape
 ```
-## Checking for the data type and counts of each Feature
-
+### Checking for the data type and counts of each Feature
 ```
 train_features_df.info()
 ```
@@ -233,7 +235,7 @@ plt.show()
 ```
 From the correlation plot it can be seen that there are correlations between the target variable (salary) and every other except for the companyID. There are also some inter relations between the features like major, degree, and job type.
 
-## Defining the required functin to reuse
+### Defining the required functin to reuse
 ```
 def combine_df(df1, df2):
     return pd.concat([df1, df2], axis = 1, sort = False)
@@ -272,3 +274,238 @@ def save_model(model, feature_importance, predictions):
 - get_target function extracts the target variable from the combined dataframe.
 - train_model function trains the model specified.
 - save_model function saves the model, feature importance and the predictions for deployment
+
+### ---- 4 Clean the data ----
+```
+train_df = combine_df(train_features_df, train_salaries_df)
+
+train_df = clean_df(train_df)
+
+train_df = one_hot_encode(train_df)
+
+salary_features = get_features(train_df, 'salary')
+
+salary_labels = get_target(train_df, 'salary')
+```
+The features and target data are initially combined into a single dataframe and cleaned. the features are encoded into numerical values by converting each individual category into a separate column. Then train features and target variables are stord in separate names for modelling purpose.
+
+In this step the features and target are suposed to be separated into test and train set but, we have another set to test the trained model so we skip this step for this project.
+
+### ---- 5 Establish a baseline ----
+1) Overall average salary:
+2) Average salary for each Industry:
+```
+model_1 = salary_labels.mean()
+base_model_1_mse = sum((salary_labels - model_1)**2)/salary_labels.count()
+
+model_2 = train_df_eda["industry"]
+base_model_2_mse = sum((salary_labels - model_2)**2)/salary_labels.count()
+```
+The first model is a mere average of all the salaries and the second model is the average salaries within a particular industry. These two models are set as base models to compare with other machince learning models.
+
+Mean Squared error is choosen as the metric to evaluate the moddel efficiency as it tells the variance from the mean and it is a regression problem.
+
+### ---- 6 Hypothesize solution ----
+
+#### Simpler models to explain the results (From an employee's perspective - Factors influencing is more important)
+- Linear Regression (As there are a linear relations between the feartues and the target variable)
+- Decision Tree
+
+#### Complex models to attain better results (From an employer's perspective - Accuracy is more important)
+- Random Forest
+- Adaptive Boosting
+- Gradient Boosting Method
+
+## Part 3 - DEVELOP
+
+
+### ---- 7 Create models ----
+```
+lin_reg = LinearRegression()
+tree_reg = DecisionTreeRegressor(max_depth = 20)
+rf = RandomForestRegressor(n_estimators = 100, n_jobs = -1, max_depth = 30, min_samples_split = 60,
+                          max_features = 20, verbose = 5, random_state = 42, bootstrap=True)
+ada = AdaBoostRegressor(n_estimators=50, learning_rate=0.1, random_state = 42)
+gbm = GradientBoostingRegressor(n_estimators=150, min_samples_split = 200, max_features = 40,
+                                max_depth = 8,learning_rate = 0.1, random_state = 42)
+models = [lin_reg, tree_reg, rf, ada, gbm]
+```
+### ---- 8 Test models ----
+```
+param_grid = {'bootstrap' : [True, False], 'n_estimators' : [50, 100, 200], 'max_depth' : [10, 20, 30, 40, 50],
+               'max_features' : [12, 13, 14, 40], 'min_samples_split' : [50, 100, 200, 300]}
+forest_reg = RandomForestRegressor(random_state = 42)
+random_search = RandomizedSearchCV(estimator = forest_reg, param_distributions = param_grid, n_iter = 25, cv = 5, 
+                                   verbose=2, random_state=42, n_jobs = -1)
+random_search.fit(salary_features, salary_labels)
+random_search.best_params_
+
+ada_boost_reg = AdaBoostingRegressor(random_state = 42)
+param_ada = {'n_estimators': [50, 100, 150, 200], 'learning_rate' : [0.05, 0.1, 0.3, 1], 'loss' : ['linear', 'square', 'exponential']}
+random_search_ada = RandomizedSearchCV(ada_boost_reg, param_ada, cv=5, n_iter=10, n_jobs=-1, random_state=42)
+random_search_ada.fit(salary_features, salary_labels)
+random_search_ada.best_params_
+
+gbm_boost_reg = GradientBoostingRegressor(random_state = 42)
+param_gbm = {'n_estimators': [50, 100, 150, 200], 'learning_rate' : [0.05,0.1,0.3], 
+              'min_samples_split' : [50, 100, 200, 300], 'max_depth' : [5, 8],
+              'max_features' : [12, 13, 14, 40]}
+random_search_gbm = RandomizedSearchCV(gbm_boost_reg, param_gbm, cv=5,n_iter=10, n_jobs=-1, random_state=42)
+random_search_gbm.fit(salary_features, salary_labels)
+random_search_gbm.best_params_
+```
+Hyper parameters has been tuned using Randsomizes search cross calidation to attain the best parameters for better accuracy
+
+Then the models are trained
+```
+model_dict = {}
+model_dict["base_model_1_mse"] = base_model_1_mse
+model_dict["base_model_2_mse"] = base_model_2_mse
+
+#Models
+for model in models:
+    model_dict[type(model).__name__] = train_model(salary_features, salary_labels, model)
+
+model_summary = pd.DataFrame(list(model_dict.items()), columns=['Model', 'Mean squared error'])
+model_summary = model_summary.sort_values(by ='Mean squared error' )
+print(model_summary)
+```
+### ---- 9 Select best model  ----
+```
+test_df = clean_df(test_features_df)
+
+test_df = one_hot_encode(test_df)
+
+best = min(model_dict, key=model_dict.get)
+
+models_dict = {}
+for model in models:
+    models_dict[type(model).__name__] = model
+    
+best_model = models_dict[best]
+
+best_model.fit(salary_features, salary_labels)
+
+predictions = best_model.predict(test_df)
+
+feature_imp = []
+
+if hasattr(best_model, 'feature_importances_'):
+    feature_imp.append(pd.Series(best_model.feature_importances_, salary_features.columns).sort_values(ascending=False))
+    feat_importance = pd.Series(best_model.feature_importances_, salary_features.columns).sort_values(ascending=False)[0:25]
+    feat_importance.plot(kind='bar', title='Feature Importances')
+    plt.ylabel('Feature Importance Score')
+
+feature_importance = feature_imp[0]
+```
+## Part 4 - DEPLOY
+
+### ---- 11 Automate pipeline ----
+Here the entire process of model building, best model selection has been automated 
+```
+def combine_df(df1, df2):
+    return pd.concat([df1, df2], axis = 1, sort = False)
+
+def clean_df(df):
+    clean_1 = df.drop("jobId", axis = 1)
+    if "salary" in df.columns:
+        clean_2 = clean_1[clean_1["salary"] > 0]
+        return clean_2
+    else:
+        return clean_1
+
+def one_hot_encode(df):
+    return pd.get_dummies(df)
+
+def get_features(df, target):
+    return df.loc[:, df.columns != target]
+
+def get_target(df, target):
+    return df[target]
+
+def train_model(features, target, model_object):
+    model_scores = cross_val_score(model_object, features, target, scoring = 'neg_mean_squared_error', cv = 5)
+    mse = -model_scores.mean()
+    return (mse)
+
+def save_model(model, feature_importance, predictions):
+    pickle.dump(model, open('final_model_salary_prediction', 'wb'))
+    feature_importance.to_csv('Salary_prediction_feature_importance.csv')
+    np.savetxt('Salary_predictions.csv', predictions, delimiter = ',')
+
+if __name__ == '__main__':
+    print("Cleaning train Data")
+    train_df = combine_df(train_features_df, train_salaries_df)
+    train_df = clean_df(train_df)
+    train_df = one_hot_encode(train_df)
+    
+    salary_features = get_features(train_df, 'salary')
+    salary_labels = get_target(train_df, 'salary')
+    
+    print("Loading constructors")
+    lin_reg = LinearRegression()
+    tree_reg = DecisionTreeRegressor(max_depth = 20)
+    rf = RandomForestRegressor(n_estimators = 100, n_jobs = -1, max_depth = 30, min_samples_split = 60,
+                          max_features = 20, verbose = 5, random_state = 42, bootstrap=True)
+    ada = AdaBoostRegressor(n_estimators=50, learning_rate=0.1, random_state = 42)
+    gbm = GradientBoostingRegressor(n_estimators=150, min_samples_split = 200, max_features = 40,
+                                max_depth = 8,learning_rate = 0.1, random_state = 42)
+    
+    models = [lin_reg, tree_reg, rf, ada, gbm]
+    
+    print("Training models")
+    #Base model 1
+    model_1 = salary_labels.mean()
+    base_model_1_mse = sum((salary_labels - model_1)**2)/salary_labels.count()
+
+    #base model 2
+    #Average salary for each Industry:
+    model_2 = train_df_eda["industry"]
+    base_model_2_mse = sum((salary_labels - model_2)**2)/salary_labels.count()
+    
+    model_dict = {}
+    model_dict["base_model_1_mse"] = base_model_1_mse
+    model_dict["base_model_2_mse"] = base_model_2_mse
+    
+    #Models
+    for model in models:
+        print("Running : " + type(model).__name__)
+        model_dict[type(model).__name__] = train_model(salary_features, salary_labels, model)
+    
+    model_summary = pd.DataFrame(list(model_dict.items()), columns=['Model', 'Mean squared error'])
+    model_summary = model_summary.sort_values(by ='Mean squared error' )
+    print("Model summary")
+    print(model_summary)
+    
+    best = min(model_dict, key=model_dict.get)
+    models_dict = {}
+    for model in models:
+        models_dict[type(model).__name__] = model
+    best_model = models_dict[best]
+    print("Best model")
+    print(best_model)
+    
+    print("Cleaning test data")
+    test_df = clean_df(test_features_df)
+    test_df = one_hot_encode(test_df)
+    
+    print("Fitting the model on test data set")
+    best_model.fit(salary_features, salary_labels)
+    
+    predictions = best_model.predict(test_df)
+    print("Prediction is complete")
+    
+    if hasattr(best_model, 'feature_importances_'):
+        feat_importance = pd.Series(best_model.feature_importances_, salary_features.columns).sort_values(ascending=False)[0:25]
+        feat_importance.plot(kind='bar', title='Feature Importances')
+        plt.ylabel('Feature Importance Score')
+    
+    feature_importance = feature_imp[0]
+```
+### ---- 12 Deploy solution ----
+Saving the model, predictions and feature importances
+```
+save_model(best_model, feature_importance, predictions)
+```
+
+## Future scope:
