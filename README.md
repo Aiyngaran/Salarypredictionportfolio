@@ -119,16 +119,16 @@ train_df_eda = pd.merge(train_features_df, train_salaries_df, on = 'jobId', how 
 ```
 
 ### Visual examination of the response variable
-Checking the distribution of the response variable
+### Checking the distribution of the response variable
 ```
 sns.set_style('darkgrid')
 sns.distplot(train_df_eda.salary)
 ```
-Salary prediction/response.JPG
+![Response Distribution](https://github.com/Aiyngaran/Salarypredictionportfolio/blob/master/Salary%20prediction/response.JPG)
 
 The Distribution seems to be slightly right skewed, might have some possible outliers. There are also some values around 0 salary.
 
-Box plot to check outliers
+### Box plot to check outliers
 ```
 train_df_eda.boxplot(column = 'salary')
 ```
