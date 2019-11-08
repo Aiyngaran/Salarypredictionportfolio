@@ -26,7 +26,7 @@ There are some general library requirements for the project and some of which ar
 
 ## Explanation of the Code
 
-The code, `salaryprediction.ipynb`, begins by importing necessary Python packages:
+The code, `salary prediction_1.ipynb`, begins by importing necessary Python packages:
 ```
 import pandas as pd
 import numpy as np
