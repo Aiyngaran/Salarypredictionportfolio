@@ -22,7 +22,7 @@ There are some general library requirements for the project and some of which ar
 **NOTE**:  I have used Anaconda distribution of Python, but any IDE can be used to execute the code.
 ---
 
-## Explanation of the Code
+### Explanation of the Code
 
 The code, `salary prediction_1.ipynb`, begins by importing necessary Python packages:
 ```
